@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Image Rating — Thesis Study</title>
+    <style>
+        :root {
+            --paper: #FAFAF7;
+            --ink: #1C1C1A;
+            --ink-soft: #5B5B54;
+            --line: #E3E0D6;
+            --accent: #1F4E5F;
+            --accent-soft: #E9EFF0;
+            --bad: #A3402B;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--paper);
+            color: var(--ink);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Calibri, Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 32px 16px 64px;
+            line-height: 1.45;
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0 0 4px;
+            letter-spacing: -0.01em;
+        }
+
+        .sub {
+            font-size: 14px;
+            color: var(--ink-soft);
+            margin: 0 0 28px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 0 0 6px;
+            color: var(--ink-soft);
+        }
+
+        input[type=text],
+        input[type=email] {
+            width: 100%;
+            padding: 11px 12px;
+            font-size: 15px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            margin-bottom: 16px;
+            font-family: inherit;
+            color: var(--ink);
+            background: #fff;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        button {
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            border-radius: 7px;
+            padding: 12px 18px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:disabled {
+            background: #B9C6CA;
+            cursor: not-allowed;
+        }
+
+        .btn-primary:not(:disabled):hover {
+            background: #173C49;
+        }
+
+        .err {
+            color: var(--bad);
+            font-size: 13px;
+            margin: -8px 0 14px;
+            min-height: 16px;
+        }
+
+        .progress {
+            font-size: 14px;
+            color: #000000;
+            margin: 0 0 14px;
+            background: #d2ffd7;
+            padding: 6px 12px;
+            border-radius: 7px;
+        }
+
+        .wrap {
+            width: 100%;
+            max-width: 460px;
+            margin: 0 auto;
+        }
+
+        .rate-left {
+            margin-bottom: 24px;
+        }
+
+        @media (min-width:760px) {
+            .wrap {
+                max-width: 900px;
+            }
+
+            .login-narrow {
+                max-width: 420px;
+                margin: 0 auto;
+            }
+
+            .rate-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 32px;
+                align-items: start;
+            }
+
+            .rate-right {
+                padding-top: 2px;
+            }
+
+            .rate-left {
+                margin-bottom: 0;
+            }
+        }
+
+        .prompt-box .prompt-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 2px;
+        }
+
+        #promptText {
+            font-size: 14px;
+            color: var(--ink);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .imgframe {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: #F0EFE9;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .imgframe img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .question .q-label {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--ink);
+        }
+
+        .scale {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .scale button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            text-align: left;
+            background: #fff;
+            border: 1px solid var(--line);
+            padding: 11px 14px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 7px;
+            color: var(--ink);
+        }
+
+        .scale button .opt-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--ink-soft);
+            flex-shrink: 0;
+        }
+
+        .scale button.selected {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .scale button.selected .opt-num {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .center-note {
+            text-align: center;
+            padding: 40px 12px;
+        }
+
+        .center-note h2 {
+            font-size: 18px;
+            margin: 0 0 8px;
+        }
+
+        .center-note p {
+            color: var(--ink-soft);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .top {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="top">
+            <h1>Image Rating — Human Evaluation</h1>
+            <p class="sub">Thank you for your cooperation. Your data is secure and protected.</p>
+        </div>
+
+
+        <!-- LOGIN -->
+        <div class="card login-narrow" id="loginCard">
+            <label for="nameInput">Name</label>
+            <input type="text" id="nameInput" autocomplete="name" placeholder="Your name" />
+            <label for="emailInput">Email</label>
+            <input type="email" id="emailInput" autocomplete="email" placeholder="you@example.com" />
+            <div class="err" id="loginErr"></div>
+            <button class="btn-primary" id="loginBtn">Start rating</button>
+        </div>
+
+        <!-- RATING -->
+        <div class="card hidden" id="rateCard">
+
+
+            <div class="rate-grid">
+                <div class="rate-left">
+                    <div class="prompt-box">
+                        <div class="prompt-label">Prompt :</div>
+                        <div id="promptText">—</div>
+                    </div>
+                    <div class="imgframe" id="imgFrame">
+                        <img id="ratingImg" src="" alt="Generated image to rate" />
+                    </div>
+                </div>
+
+                <div class="rate-right">
+                    <div class="progress" id="progressLine"></div>
+                    <div class="question">
+                        <div class="q-label">How well does this image match the prompt?</div>
+                        <div class="scale" id="scaleRow"></div>
+                    </div>
+                    <div class="err" id="submitErr"></div>
+                    <button class="btn-primary" id="submitBtn" disabled>Submit &amp; next</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DONE -->
+        <div class="card hidden center-note login-narrow" id="doneCard">
+            <h2>All done — thank you</h2>
+            <p id="doneMsg">There are no more images left for you to rate right now.</p>
+        </div>
+
+        <!-- LOADING -->
+        <div class="card hidden center-note login-narrow" id="loadingCard">
+            <p>Loading…</p>
+        </div>
+    </div>
+
+    <script>
+        /* ====================== CONFIG ====================== */
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrc9WOrUrbAh929fmGv2ri5rWuY47FI0y_LWWOcmWjcZEmobwLmRWbQ-lFzKE9eusX5w/exec";
+        const IMAGES_BASE_PATH = "img_sd35/";      // your generated-images folder
+        const PROMPTS_MAP_PATH = "prompts_map.json"; // filename -> prompt text, generated by scan_images.py
+        /* ====================================================== */
+
+        // 5-point scale, low match -> high match
+        const SCALE_OPTIONS = [
+            { value: 1, label: "Not at all" },
+            { value: 2, label: "Slightly" },
+            { value: 3, label: "Moderately" },
+            { value: 4, label: "Mostly" },
+            { value: 5, label: "Perfectly" },
+        ];
+
+        const els = {
+            loginCard: document.getElementById('loginCard'),
+            rateCard: document.getElementById('rateCard'),
+            doneCard: document.getElementById('doneCard'),
+            loadingCard: document.getElementById('loadingCard'),
+            nameInput: document.getElementById('nameInput'),
+            emailInput: document.getElementById('emailInput'),
+            loginErr: document.getElementById('loginErr'),
+            loginBtn: document.getElementById('loginBtn'),
+            progressLine: document.getElementById('progressLine'),
+            promptText: document.getElementById('promptText'),
+            ratingImg: document.getElementById('ratingImg'),
+            scaleRow: document.getElementById('scaleRow'),
+            submitBtn: document.getElementById('submitBtn'),
+            submitErr: document.getElementById('submitErr'),
+            doneMsg: document.getElementById('doneMsg'),
+        };
+
+        let state = {
+            userId: null,
+            name: null,
+            currentFilename: null,
+            ratedCount: 0,
+            score: null,
+            promptMap: {},
+        };
+
+        function showOnly(card) {
+            [els.loginCard, els.rateCard, els.doneCard, els.loadingCard].forEach(c => c.classList.add('hidden'));
+            card.classList.remove('hidden');
+        }
+
+        async function callApi(params) {
+            const url = APPS_SCRIPT_URL + '?' + new URLSearchParams(params).toString();
+            const res = await fetch(url, { method: 'GET' });
+            return res.json();
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        /* ---------- build the 5 scale option rows once ---------- */
+        SCALE_OPTIONS.forEach(({ value, label }) => {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.setAttribute('aria-label', `Score ${value} of 5 — ${label}`);
+            b.innerHTML = `<span class="opt-num">${value}</span><span>${label}</span>`;
+            b.addEventListener('click', () => {
+                state.score = value;
+                [...els.scaleRow.children].forEach(c => c.classList.remove('selected'));
+                b.classList.add('selected');
+                els.submitBtn.disabled = false;
+            });
+            els.scaleRow.appendChild(b);
+        });
+
+        function resetScale() {
+            state.score = null;
+            [...els.scaleRow.children].forEach(c => c.classList.remove('selected'));
+            els.submitBtn.disabled = true;
+            els.submitBtn.textContent = 'Submit & next';
+            els.submitErr.textContent = '';
+        }
+
+        /* ---------- login ---------- */
+        els.loginBtn.addEventListener('click', async () => {
+            const name = els.nameInput.value.trim();
+            const email = els.emailInput.value.trim();
+            els.loginErr.textContent = '';
+
+            if (!name) { els.loginErr.textContent = 'Enter your name.'; return; }
+            if (!isValidEmail(email)) { els.loginErr.textContent = 'Enter a valid email address.'; return; }
+
+            els.loginBtn.disabled = true;
+            els.loginBtn.textContent = 'Starting…';
+            try {
+                const res = await callApi({ action: 'login', name, email });
+                if (!res.ok) {
+                    els.loginErr.textContent = res.error || 'Could not log in. Try again.';
+                    return;
+                }
+                state.userId = res.userId;
+                state.name = res.name;
+                state.ratedCount = res.ratedCount || 0;
+                localStorage.setItem('rater_userId', res.userId);
+                localStorage.setItem('rater_name', res.name);
+                localStorage.setItem('rater_email', email);
+                await loadNext();
+            } catch (err) {
+                els.loginErr.textContent = 'Network error — check your connection and try again.';
+            } finally {
+                els.loginBtn.disabled = false;
+                els.loginBtn.textContent = 'Start rating';
+            }
+        });
+
+        /* ---------- load next image ---------- */
+        async function loadNext() {
+            showOnly(els.loadingCard);
+            const res = await callApi({ action: 'next', userId: state.userId });
+            renderNextResult(res);
+        }
+
+        function renderNextResult(res) {
+            if (!res.ok) {
+                els.doneMsg.textContent = res.error || 'Something went wrong loading the next image.';
+                showOnly(els.doneCard);
+                return;
+            }
+            if (res.done) {
+                els.doneMsg.textContent = `There are no more images left for you to rate right now. You rated ${state.ratedCount} image(s) — thank you.`;
+                showOnly(els.doneCard);
+                return;
+            }
+            state.currentFilename = res.filename;
+            els.ratingImg.src = IMAGES_BASE_PATH + encodeURIComponent(res.filename);
+            els.promptText.textContent = state.promptMap[res.filename] || '(prompt text not found for this file)';
+            els.progressLine.textContent = `${state.name} — ${state.ratedCount} rated so far · ${res.remaining} left in the pool`;
+            resetScale();
+            showOnly(els.rateCard);
+        }
+
+        /* ---------- submit rating ---------- */
+        els.submitBtn.addEventListener('click', async () => {
+            if (!state.score) return;
+            els.submitBtn.disabled = true;
+            els.submitBtn.textContent = 'Submitting…';
+            els.submitErr.textContent = '';
+            try {
+                // One round trip: the backend submits this rating and hands back the
+                // next image in the same response, instead of two separate calls.
+                const res = await callApi({
+                    action: 'submitAndNext',
+                    userId: state.userId,
+                    filename: state.currentFilename,
+                    score: state.score,
+                });
+                if (res.submitOk) {
+                    state.ratedCount += 1;
+                } else if (res.submitError && res.submitError !== 'already_rated' && res.submitError !== 'completed') {
+                    // a real failure — show it, but still show whatever image "next" returned
+                    els.submitErr.textContent = res.submitError;
+                }
+                renderNextResult(res);
+            } catch (err) {
+                els.submitErr.textContent = 'Network error — check your connection and try again.';
+                els.submitBtn.disabled = false;
+                els.submitBtn.textContent = 'Submit & next';
+            }
+        });
+
+        /* ---------- boot ---------- */
+        async function loadPromptMap() {
+            try {
+                const res = await fetch(PROMPTS_MAP_PATH);
+                state.promptMap = await res.json();
+            } catch (err) {
+                console.warn('Could not load prompts_map.json — prompt text will be blank.', err);
+                state.promptMap = {};
+            }
+        }
+
+        (async function init() {
+            await loadPromptMap();
+            const savedId = localStorage.getItem('rater_userId');
+            const savedName = localStorage.getItem('rater_name');
+            const savedEmail = localStorage.getItem('rater_email');
+            if (savedId && savedName && savedEmail) {
+                showOnly(els.loadingCard);
+                // Re-confirm with the server instead of trusting stale local state —
+                // this re-fetches the true rated count from the Images sheet so a
+                // page refresh doesn't show "0 rated so far" for someone who has
+                // already rated images in an earlier session.
+                const res = await callApi({ action: 'login', name: savedName, email: savedEmail });
+                if (res.ok) {
+                    state.userId = res.userId;
+                    state.name = res.name;
+                    state.ratedCount = res.ratedCount || 0;
+                    loadNext();
+                } else {
+                    showOnly(els.loginCard);
+                }
+            }
+        })();
+    </script>
+</body>
+
+</html>
